@@ -56,4 +56,4 @@ The operator deferred the web UI. Coder/OpenHands trials and browser publication
 
 ## Multi-day session lifetime
 
-Quota-limited sessions lasting days are a confirmed operator requirement. Sessions/workspaces persist across quota waits and attempts. The legacy `task_deadline_minutes` key represents active-work minutes per attempt, excluding confirmed waits; a separate controller-disconnect bound remains mandatory. See the [quota-wait contract](pilot/index.html#quota-waits). Runtime enforcement remains Phase 3 work, with retention protection in Phase 5 and P17 acceptance in Phase 6.
+Quota-limited sessions lasting days are a confirmed operator requirement. Sessions/workspaces persist across quota waits and attempts. The legacy `task_deadline_minutes` key represents active-work minutes per attempt, excluding confirmed waits; a separate controller-disconnect deadline remains mandatory. See the [quota-wait contract](pilot/index.html#quota-waits). Runtime enforcement remains Phase 3 work, with retention protection in Phase 5 and P17 acceptance in Phase 6.
