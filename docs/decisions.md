@@ -45,3 +45,7 @@ The reviewed Portainer skill has revision `7ad4fa91594a2ad99f7ff34946216be272a39
 The local workspace has Codex CLI `0.154.0`; dev-host's agent installations are unknown. Product documentation is changing quickly: Coder's native agent is distinct from third-party CLIs, OpenHands's current Canvas differs from legacy Local GUI and documents a shared-origin credential risk, Docker Sandboxes has a current Linux/KVM path, and the public Daytona core and Vibe Kanban have maintenance/sunset notices. Vibe Kanban's company shutdown announcement describes continued local/community operation; it is not a claim that the local software is unusable.
 
 See the [research sources](research.md#sources) for evidence. Pilot outcomes should replace assumptions here, including exact versions, measured resource use, edition entitlements, and failed acceptance scenarios.
+
+## Pilot delivery scope
+
+The [Pilot v0.1 implementation plan](pilot/index.html) owns current phase ordering. Its Phase 1 resolves D03–D05 before permanent implementation. Scoped credential delivery is mandatory from the first workspace; deploying a new central secret manager (D09), GPU support, automated integration/releases, and public previews can follow the pilot. The original broad roadmap remains historical context.
