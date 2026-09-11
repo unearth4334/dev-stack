@@ -6,16 +6,16 @@ Decisions are proposed unless explicitly marked confirmed. “Confirmed input”
 |---|---|---|---|---|
 | D01 | Placement | QNAP control services; dev-host execution | Confirmed input | Capacity or runtime compatibility prevents it |
 | D02 | Infrastructure management | Retain existing Portainer; separate workspace ownership | Proposed | Portainer integration adds more complexity than value |
-| D03 | Workspace platform | Pilot Coder Workspaces against a portable baseline | Open | Remote topology, licensing, or resource budget fails |
-| D04 | Agent UI | Pilot OpenHands Agent Canvas; one backend per task initially | Open | Approvals, recovery, adapter compatibility, or documented shared-origin credential risk fails validation |
+| D03 | Workspace platform | Fixed Docker templates owned by a trusted Python runner | Selected for pilot; compatibility gate pending | Host compatibility, isolation, or resource budget fails |
+| D04 | Agent UI | No runtime web UI; Termius/CLI only | Deferred by operator | Operator explicitly reopens web UI scope |
 | D05 | Execution boundary | Unprivileged containers for trusted tasks; VM/microVM class for stronger isolation or container builds | Proposed | Threat model or build requirements demand stronger default |
 | D06 | Source isolation | Independent clone and branch per task | Proposed | Measured storage cost warrants controlled worktrees or snapshots |
 | D07 | Agent transport | Structured CLI/API for orchestration; Termius with mosh + tmux for people, SSH + tmux fallback | Human access intent confirmed; implementation pending | Selected agent offers no usable structured interface |
 | D08 | Task authority | Durable deterministic state and policy; planner proposes work | Proposed | Existing platform fully covers this contract |
-| D09 | Secrets | Infisical pilot or OpenBao; one selected manager | Open | Edition, hardware, bootstrap, or policy requirements fail |
+| D09 | Secrets | Environment/native OS keyring bootstrap; scoped runtime grants using an existing protected store | Selected bootstrap; runtime delivery pending | Edition, hardware, bootstrap, or policy requirements fail |
 | D10 | Release access | Dedicated release path using existing deployment skill | Proposed | A reviewed broker replaces direct credential delivery |
 | D11 | Shared skills | Reviewed Git releases pinned by revision/digest | Proposed | Scale warrants a distribution registry |
-| D12 | Artifact storage | QNAP immutable directories and authenticated static publication | Proposed | Storage lifecycle or integration needs justify object storage |
+| D12 | Artifact storage | QNAP immutable directories with private SSH/SFTP access | Proposed | Storage lifecycle or integration needs justify object storage |
 | D13 | Monitoring | Minimal events/metrics first; Prometheus/Grafana as needed | Proposed | Existing monitoring already covers the required signals |
 | D14 | Network | Private control plane and explicitly constrained worker egress | Proposed | Access requirements need a different exposure model |
 | D15 | Git integration | One integration lane per repository with tests on merged result | Proposed | Repository already has an equivalent merge queue |
@@ -35,8 +35,8 @@ These questions do not prevent planning; they gate the corresponding implementat
 4. Are tasks limited to trusted personal repositories, or will agents execute arbitrary external repositories and pull requests?
 5. Must projects build Docker images or start Compose stacks inside their workspaces?
 6. What private networking, DNS, TLS, and reverse proxy services already exist?
-7. Which Portainer edition/version is installed, and are paid Coder or secret-management features acceptable?
-8. What authentication system, backup destination, artifact retention, and public-preview needs already exist?
+7. Which Portainer edition/version is installed, and can the selected Docker/SSH boundary be enforced?
+8. What private SSH identities, backup destination and artifact retention policy already exist?
 
 ## Evidence and uncertainty
 
@@ -49,3 +49,7 @@ See the [research sources](research.md#sources) for evidence. Pilot outcomes sho
 ## Pilot delivery scope
 
 The [Pilot v0.1 implementation plan](pilot/index.html) owns current phase ordering. Its Phase 1 resolves D03–D05 before permanent implementation. Scoped credential delivery is mandatory from the first workspace; deploying a new central secret manager (D09), GPU support, automated integration/releases, and public previews can follow the pilot. The original broad roadmap remains historical context.
+
+## Terminal-first pilot clarification — September 11, 2026
+
+The operator deferred the web UI. Coder/OpenHands trials and browser publication are outside the pilot. The selected baseline is a Python CLI with SQLite control state on QNAP, a fixed-template Docker runner on dev-host, restricted SSH JSON control, and Termius with mosh/tmux for interactive access. Phase 1 validates this baseline rather than reopening the product shortlist. Historical research does not override this scope.

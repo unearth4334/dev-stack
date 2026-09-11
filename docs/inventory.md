@@ -26,7 +26,7 @@ Reported by the operator; not independently inspected on the machines.
 | Agent authentication | Subscription or API mode per CLI; installed versions and refresh behavior |
 | QNAP | Model, architecture, OS, available CPU/RAM/storage, backup configuration |
 | Portainer | Version/edition, endpoint IDs, roles, TLS trust and Edge connectivity |
-| Mobile access | Phone OS/browser, Termius version, private route and mosh UDP reachability |
+| Mobile access | Phone OS, Termius version, private route and mosh UDP reachability; runtime web UI deferred |
 | Networking | Private route, DNS, reverse proxy, UI and preview access |
 
 Linux remains a design assumption until the OS is confirmed. CPU model alone does not establish that KVM is available to the execution environment.
@@ -55,3 +55,7 @@ Keep GPU access off in the initial ordinary-workspace profile. The initial plan 
 If a project later needs CUDA, graphics, or local inference, create a separate GPU workload profile with explicit access and scheduling. Measure usable VRAM and host-memory consumption first. Initially allow only one GPU workload at a time, unless measured coexistence supports more. A persistent local inference service would have its own budget and would reduce the resources available to task workspaces.
 
 GPU sharing/isolation and any local model selection require a separate compatibility assessment. No driver installation, passthrough configuration, or model download is implied by recording this hardware.
+
+## Collecting private values
+
+Run `python3 scripts/dev_stack.py configure` from the repository, then `doctor` to identify missing fields. The [configuration guide](configuration.md) lists inputs, private storage and credential options. Saved answers are operator-supplied intent; live host/auth/fixture verification still gates Phase 0.

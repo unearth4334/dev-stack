@@ -38,3 +38,11 @@ Copilot re-reviewed `edf252e` and identified a current-docs publication inconsis
 After verifying the live plan, created [milestone 1](https://github.com/unearth4334/dev-stack/milestone/1) and issues [#2](https://github.com/unearth4334/dev-stack/issues/2), [#3](https://github.com/unearth4334/dev-stack/issues/3), [#4](https://github.com/unearth4334/dev-stack/issues/4), [#5](https://github.com/unearth4334/dev-stack/issues/5), [#6](https://github.com/unearth4334/dev-stack/issues/6), [#7](https://github.com/unearth4334/dev-stack/issues/7), and [#8](https://github.com/unearth4334/dev-stack/issues/8). Phase 0 is ready for investigation; each subsequent phase is blocked on its predecessor. No runtime issue is closed by publishing the plan.
 
 The [follow-up tracking PR #9](https://github.com/unearth4334/dev-stack/pull/9) records its own CI/review evidence and publishes the actual milestone/issue links. Automatic Copilot review is enabled for main-branch PRs and new pushes (repository ruleset 22882825); missing requests were also made explicitly during plan review.
+
+## Terminal-first plan and configuration refinement
+
+The operator deferred all runtime web UIs. [PR #10](https://github.com/unearth4334/dev-stack/pull/10) now covers the final terminal-first baseline and preparatory Phase 0 configuration tooling, superseding its earlier mobile-web scope. It does not close Phase 0 or claim deployed behavior.
+
+Author review: removed product selection and browser artifact gates; retained private results, isolation, durable state and verified cancellation. Chose fixed Docker templates, a Python/SQLite controller, restricted SSH JSON control and a tmux attach gateway. Host/CLI compatibility remains a live gate. Configuration follows the Portainer skill's private profile/native-vault pattern, with no deployments or remote fixture execution.
+
+Validation covers atomic profile updates and preservation on failure, schema/input constraints, memory/path consistency, private file permissions, secret precedence and no plaintext fallback, hidden-input failures, offline diagnostics, exact endpoint matching, async/type rejection, redirect refusal and suppressed API error bodies. Live credentials and hosts have not been tested. The earlier review of the mobile-only diff does not approve this expanded change; its new review and CI evidence belong to PR #10.
