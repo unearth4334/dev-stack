@@ -1,0 +1,51 @@
+{
+  "schema_version": "draft-1",
+  "example_only": true,
+  "task_id": "example-task-001",
+  "idempotency_key": "example-task-001-request-1",
+  "project_profile": "example-app-dev",
+  "repository": {
+    "url": "https://git.example.test/team/example-app.git",
+    "base_ref": "main",
+    "resolve_to_commit_before_dispatch": true,
+    "task_branch": "agents/example-task-001",
+    "checkout_mode": "independent-clone"
+  },
+  "objective": "Implement the change described in the approved task plan and produce a tested patch.",
+  "runtime_profile": "trusted-linux-development",
+  "agent_profile": "selected-cli-pinned",
+  "skills_release": "resolve-reviewed-release-before-dispatch",
+  "limits": {
+    "cpu_limit": 2,
+    "memory_mib": 4096,
+    "pids_limit": 512,
+    "disk_budget_gib": 20,
+    "wall_time_seconds": 3600
+  },
+  "requested_grant_profiles": [
+    "repository-read",
+    "development-model-access",
+    "own-attempt-artifact-upload"
+  ],
+  "verification_profile": "example-app-tests",
+  "result_contract": {
+    "required": [
+      "summary.md",
+      "changes.patch",
+      "verification.json",
+      "provenance.json"
+    ],
+    "optional": [
+      "plan.md",
+      "screenshots/",
+      "test-report/"
+    ]
+  },
+  "publication": {
+    "visibility": "private",
+    "prefix_template": "example-app/example-task-001/{attempt_id}/",
+    "max_total_bytes": 104857600
+  },
+  "review_policy": "human-review-before-integration",
+  "retention_profile": "pilot-seven-days-after-result-capture"
+}

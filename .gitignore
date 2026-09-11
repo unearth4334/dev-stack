@@ -1,0 +1,14 @@
+# Local runtime data and credentials do not belong in the planning repository.
+.env
+.env.*
+!.env.example
+secrets/
+state/
+artifacts/
+*.key
+*.pem
+auth.json
+*.tfstate
+*.tfstate.*
+.terraform/
+__pycache__/
