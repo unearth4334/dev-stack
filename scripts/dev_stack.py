@@ -72,7 +72,7 @@ FIELDS = {
         'host_reserve_gib': ('Host/existing-services RAM reserve, GiB', 'positive', 16),
         'support_reserve_gib': ('Support/headroom RAM reserve, GiB', 'positive', 8),
         'heavy_builds': ('Maximum simultaneous heavy builds', 'positive', 1),
-        'task_deadline_minutes': ('Maximum attempt duration, minutes', 'positive', 120),
+        'task_deadline_minutes': ('Active-work budget per attempt, minutes (excludes quota/input waits; not session lifetime)', 'positive', 120),
     },
 }
 OPTIONAL = {('portainer', 'ca_bundle')}
