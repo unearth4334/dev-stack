@@ -10,7 +10,7 @@ Decisions are proposed unless explicitly marked confirmed. “Confirmed input”
 | D04 | Agent UI | Pilot OpenHands Agent Canvas; one backend per task initially | Open | Approvals, recovery, adapter compatibility, or documented shared-origin credential risk fails validation |
 | D05 | Execution boundary | Unprivileged containers for trusted tasks; VM/microVM class for stronger isolation or container builds | Proposed | Threat model or build requirements demand stronger default |
 | D06 | Source isolation | Independent clone and branch per task | Proposed | Measured storage cost warrants controlled worktrees or snapshots |
-| D07 | Agent transport | Structured CLI/API; SSH/tmux for people; optional mosh | Proposed | Selected agent offers no usable structured interface |
+| D07 | Agent transport | Structured CLI/API for orchestration; Termius with mosh + tmux for people, SSH + tmux fallback | Human access intent confirmed; implementation pending | Selected agent offers no usable structured interface |
 | D08 | Task authority | Durable deterministic state and policy; planner proposes work | Proposed | Existing platform fully covers this contract |
 | D09 | Secrets | Infisical pilot or OpenBao; one selected manager | Open | Edition, hardware, bootstrap, or policy requirements fail |
 | D10 | Release access | Dedicated release path using existing deployment skill | Proposed | A reviewed broker replaces direct credential delivery |

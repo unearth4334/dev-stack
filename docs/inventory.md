@@ -26,6 +26,7 @@ Reported by the operator; not independently inspected on the machines.
 | Agent authentication | Subscription or API mode per CLI; installed versions and refresh behavior |
 | QNAP | Model, architecture, OS, available CPU/RAM/storage, backup configuration |
 | Portainer | Version/edition, endpoint IDs, roles, TLS trust and Edge connectivity |
+| Mobile access | Phone OS/browser, Termius version, private route and mosh UDP reachability |
 | Networking | Private route, DNS, reverse proxy, UI and preview access |
 
 Linux remains a design assumption until the OS is confirmed. CPU model alone does not establish that KVM is available to the execution environment.

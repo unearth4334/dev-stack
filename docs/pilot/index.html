@@ -135,7 +135,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <section id="alternatives">
 <h2>Platform selection and consequential trade-offs</h2>
 <p>Phase 1 selects concrete components before implementation. Coder Workspaces is the first environment-management candidate; test QNAP placement, dev-host provisioning and edition entitlement. Coder's native agent is optional and cannot replace the required CLIs by assumption. OpenHands Agent Canvas is the first agent-UI candidate, subject to adapter compatibility and mitigation of its documented shared-origin editor/backend-key risk. A fixed-template native runner plus a private index is the fallback, not a mandate to build a new framework.</p>
-<p>Choose one lifecycle owner for each resource. Portainer may observe task containers but must not compete with their workspace controller. Its Standard Edge tunnel does not provide general-purpose SSH, preview or Terraform connectivity. Use structured agent interfaces; SSH/tmux are operator access, and mosh is optional human convenience. Experimental transports must be tested at pinned versions and contained behind the selected private interface.</p>
+<p>Choose one lifecycle owner for each resource. Portainer may observe task containers but must not compete with their workspace controller. Its Standard Edge tunnel does not provide general-purpose SSH, preview or Terraform connectivity. Use structured agent interfaces; Termius with mosh plus tmux is the preferred human terminal access path; SSH plus tmux is a reconnect-and-reattach fallback. Experimental transports must be tested at pinned versions and contained behind the selected private interface.</p>
 <p>Docker Sandboxes or another established VM runtime is a conditional isolation option when the host and workload warrant it. Vibe Kanban's company shutdown/community transition and Daytona's unmaintained public core make them reference designs rather than foundations for this pilot. Source evidence and qualifications are in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/research.md">research report</a>.</p>
 </section>
 <section id="sequencing">
@@ -176,6 +176,13 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <p>
 <strong>Rollback:</strong> Remove disposable authentication-test environments and revoke temporary credentials; do not change existing stacks.</p>
 </section>
+<section id="mobile-access">
+<h2>Mobile operator access</h2>
+<p>Phone usability is a pilot selection gate. Phase 0 records the operator's phone OS, browser, Termius version and private network access. Phase 1 tests the actual phone in portrait with the software keyboard open: browse two to five tasks, submit a prompt, read progress, respond to permission requests, cancel work and open retained results. Record scrolling, copy/paste and suspend/reopen behavior; desktop browser availability alone is insufficient.</p>
+<p><a href="https://docs.openhands.dev/openhands/usage/agent-canvas/mobile-access">OpenHands documents phone/tablet connectivity</a>, making Canvas a promising candidate, but this does not establish ergonomic suitability or remove its credential-isolation gate. <a href="https://coder.com/docs/user-guides/workspace-access/web-terminal">Coder documents a reconnecting web terminal</a>; its complete phone workflow remains unverified. Portainer remains the infrastructure console.</p>
+<p>The operator intends mosh for Termius phone access, not orchestration. <a href="https://www.termius.com/blog/8-tips-for-using-ai-agents-on-mobile-in-termius">Termius recommends tmux for remote process persistence and mosh for network changes</a>. Run the interactive agent inside tmux in its task workspace. Mosh handles temporary outages and roaming while its client session survives; after the client is closed, reconnect and attach to the existing tmux session. SSH plus tmux preserves work too, but requires SSH reconnection and reattachment. Neither approach survives termination of the workspace or host processes.</p>
+<p>Verify a private UDP route for mosh; the Portainer Edge tunnel is not that route. Test each CLI over Wi-Fi/cellular transitions, temporary loss, phone suspension and Termius force-close/reopen. Reattachment must not launch another agent. A structured/headless task is not automatically a tmux terminal: Phase 3 defines supported human handoff and enforces one active writer before any provider-session resume.</p>
+</section>
 <section id="phase-1">
 <h2>Phase 1 — Select the pilot workspace owner and agent control surface</h2>
 <p>The research shortlist has consequential compatibility and licensing uncertainties. Building a custom scheduler or adopting multiple controllers before testing them risks duplicate ownership and rework.</p>
@@ -184,6 +191,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <li>Run a timeboxed vertical trial of Coder Workspaces and OpenHands Agent Canvas where Phase 0 prerequisites permit; compare against a fixed-template native runner.</li>
 <li>Use one isolated disposable worker with a scoped credential for each required CLI. Exercise structured events, a follow-up turn, a denied action, cancellation and a retained patch.</li>
 <li>Record exact versions, supported transports, auth behavior, service placement, resource ownership and paid-feature dependencies.</li>
+<li>Pass the <a href="#mobile-access">mobile operator workflow</a> on the actual phone before selecting the UI; document any gap and its implementation owner.</li>
 <li>Select one workspace owner and one control path, with a narrow list of missing capabilities to implement. Evaluate microVMs only if the selected workload requires a stronger boundary or internal container builds.</li>
 </ul>
 <p>
@@ -383,7 +391,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <h3>Observable completion criteria</h3>
 <ul>
 <li>Both runtimes operate concurrently from the QNAP entry point; a measured mixed five-worker run completes without boundary violations, missing accepted tasks or unaccounted resources.</li>
-<li>Required acceptance scenarios P01–P14 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
+<li>Required acceptance scenarios P01–P16 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
 <li>A representative working-day soak has bounded disk/log use, no unexplained orphans and documented provider/capacity behavior.</li>
 <li>The operator can recover a task and restore control/results using the committed runbook, with observed recovery time and loss window.</li>
 <li>All prerequisite PRs are merged, plan/issue status matches deployed behavior and every deferred enhancement has an explicit follow-up record.</li>
@@ -477,9 +485,11 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <td>Pinned adapter upgrade/revert preserves required event, permission, auth and resume behavior.</td>
 <td>3, 6</td>
 </tr>
+<tr><td>P15</td><td>Actual phone completes task browsing, prompting, permission response, cancellation and result viewing with the software keyboard; suspend/reopen restores usable state.</td><td>1, 4, 6</td></tr>
+<tr><td>P16</td><td>Both interactive CLIs retain the same remote tmux session across network loss and client restart; reconnect/handoff creates no duplicate writer. Record mosh roaming and SSH fallback behavior separately.</td><td>3, 4, 6</td></tr>
 </tbody>
 </table>
-<p>The earlier roadmap used A01–A15. This pilot uses P01–P14 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred unless selected as necessary for the fixture. Private result publication and browser credential separation remain mandatory.</p>
+<p>The earlier roadmap used A01–A15. This pilot uses P01–P16 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred unless selected as necessary for the fixture. Private result publication and browser credential separation remain mandatory.</p>
 </section>
 <section id="release">
 <h2>Compatibility, release and rollback</h2>
