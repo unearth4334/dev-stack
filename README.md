@@ -9,3 +9,5 @@ The initial direction is to retain Portainer for infrastructure, use a separate 
 Research checked on September 10, 2026. This directory contains planning documents and an illustrative manifest; no services have been installed or deployed, and no Portainer credentials have been copied here. Confirmed scope: Codex CLI and Claude Code, with 2–5 concurrent workers on dev-host (Intel Ultra 7 265, 64 GiB RAM, RTX 5070 Ti, as reported). See the [inventory](docs/inventory.md) for remaining OS, storage, QNAP, and authentication questions.
 
 The [development workflow](CONTRIBUTING.md) defines phased issues, review, and delivery. The [original platform roadmap](docs/platform-roadmap.md) is background; the pilot page defines current scope and ordering.
+
+Pilot tracking: [milestone](https://github.com/unearth4334/dev-stack/milestone/1), starting with [Phase 0 — inventory, access and authentication](https://github.com/unearth4334/dev-stack/issues/2). All runtime phases remain unimplemented; the planning/publication PR is [#1](https://github.com/unearth4334/dev-stack/pull/1).

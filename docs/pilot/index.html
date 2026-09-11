@@ -15,8 +15,8 @@
 <p class="summary">Operate Codex CLI and Claude Code in isolated environments on dev-host, with a private QNAP control surface and durable, reviewable results. Start with two workers; validate a mixed workload at five.</p>
 <section id="status">
 <h2>Status and delivery tracking</h2>
-<p>Planning baseline: September 10, 2026. No pilot services are deployed. Author design review is recorded in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/pilot/review.md">review record</a>; independent PR review is pending. Phase issues will be staged after the merged page is verified. Phase states below are a maintained snapshot; GitHub issues are the live work inventory.</p>
-<p id="milestone-link">Milestone: pending plan publication. No due date is committed until host access and the Phase 0 baseline are verified.</p>
+<p>Planning baseline: September 10, 2026. No pilot services are deployed. The author design review and completed Copilot review are recorded in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/pilot/review.md">review record</a> and <a href="https://github.com/unearth4334/dev-stack/pull/1">merged plan PR #1</a>. The merged plan was verified on Pages before the milestone and phase issues were created. Phase states below are a maintained snapshot; GitHub issues are the live work inventory.</p>
+<p id="milestone-link">Milestone: <a href="https://github.com/unearth4334/dev-stack/milestone/1">Pilot v0.1 — concurrent agent workspaces</a>. No due date is committed until host access and the Phase 0 baseline are verified.</p>
 <table>
 <thead>
 <tr>
@@ -34,7 +34,7 @@
 <a href="#phase-0">Verify hosts, access, authentication, and pilot workload</a>
 </td>
 <td>None</td>
-<td id="issue-0">Not created</td>
+<td id="issue-0"><a href="https://github.com/unearth4334/dev-stack/issues/2">#2</a> — Ready for investigation</td>
 <td id="pr-0">Not started</td>
 </tr>
 <tr>
@@ -43,7 +43,7 @@
 <a href="#phase-1">Select the pilot workspace owner and agent control surface</a>
 </td>
 <td>Phase 0 merged</td>
-<td id="issue-1">Not created</td>
+<td id="issue-1"><a href="https://github.com/unearth4334/dev-stack/issues/3">#3</a> — Blocked on prerequisite</td>
 <td id="pr-1">Not started</td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 <a href="#phase-2">Provision reproducible isolated workspaces with scoped credentials</a>
 </td>
 <td>Phase 1 merged</td>
-<td id="issue-2">Not created</td>
+<td id="issue-2"><a href="https://github.com/unearth4334/dev-stack/issues/4">#4</a> — Blocked on prerequisite</td>
 <td id="pr-2">Not started</td>
 </tr>
 <tr>
@@ -61,7 +61,7 @@
 <a href="#phase-3">Run both agents through a durable supervised task lifecycle</a>
 </td>
 <td>Phase 2 merged</td>
-<td id="issue-3">Not created</td>
+<td id="issue-3"><a href="https://github.com/unearth4334/dev-stack/issues/5">#5</a> — Blocked on prerequisite</td>
 <td id="pr-3">Not started</td>
 </tr>
 <tr>
@@ -70,7 +70,7 @@
 <a href="#phase-4">Deploy private QNAP control with recoverable dev-host execution</a>
 </td>
 <td>Phase 3 merged</td>
-<td id="issue-4">Not created</td>
+<td id="issue-4"><a href="https://github.com/unearth4334/dev-stack/issues/6">#6</a> — Blocked on prerequisite</td>
 <td id="pr-4">Not started</td>
 </tr>
 <tr>
@@ -79,7 +79,7 @@
 <a href="#phase-5">Publish durable results and validate safe retention and recovery</a>
 </td>
 <td>Phase 4 merged</td>
-<td id="issue-5">Not created</td>
+<td id="issue-5"><a href="https://github.com/unearth4334/dev-stack/issues/7">#7</a> — Blocked on prerequisite</td>
 <td id="pr-5">Not started</td>
 </tr>
 <tr>
@@ -88,7 +88,7 @@
 <a href="#phase-6">Validate two-to-five-worker operation and hand over the pilot</a>
 </td>
 <td>Phase 5 merged</td>
-<td id="issue-6">Not created</td>
+<td id="issue-6"><a href="https://github.com/unearth4334/dev-stack/issues/8">#8</a> — Blocked on prerequisite</td>
 <td id="pr-6">Not started</td>
 </tr>
 </tbody>
@@ -506,6 +506,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 </section>
 <section id="history">
 <h2>Decision history and references</h2>
+<p>September 11, 2026: plan PR #1 merged after author review, three Copilot review passes and green CI. Published the verified plan, created milestone 1 and staged phase issues #2–#8. All implementation phases remain open.</p>
 <p>September 10, 2026: narrowed the original platform roadmap to a runnable pilot. Moved product selection before permanent implementation, made scoped credentials a prerequisite for live execution, and separated public planning from private runtime artifacts. Kept central secret-manager migration, GPU work and automated releases as later platform work.</p>
 <ul>
 <li>
