@@ -32,6 +32,7 @@ class Page(HTMLParser):
 
 def main():
     paths = [ROOT / "README.md", ROOT / "CONTRIBUTING.md"]
+    paths += sorted((ROOT / ".github").rglob("*.md"))
     paths += sorted((ROOT / "docs").rglob("*.md"))
     paths += sorted((ROOT / "docs").rglob("*.html"))
     pages = {}

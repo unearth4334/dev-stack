@@ -28,3 +28,7 @@ This is an author design review, not proof of live runtime behavior or independe
 - GitHub Pages publication: pending merge and HTTP verification.
 - [Plan PR #1](https://github.com/unearth4334/dev-stack/pull/1): documentation CI passed on the initial reviewed revision. Copilot reviewed the plan/workflow and reported two checker portability findings: implicit text encoding and a Python 3.9-only path method. Both are corrected; re-review and final CI are pending.
 - Checker validation: UTF-8 documents pass; missing HTML anchors and symlink escapes outside the repository fail. These are manual fixture checks, not live runtime acceptance.
+
+## Re-review follow-up
+
+Copilot re-reviewed `edf252e` and identified a current-docs publication inconsistency: the original research named the actual Portainer management address while the new workflow prohibits private topology. The current research now uses a placeholder; the already-public initial Git history is unchanged. The review also requested including contributor-facing `.github` Markdown in link validation; the checker now includes it. Final CI and re-review remain pending.

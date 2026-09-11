@@ -12,7 +12,7 @@ These are architectural recommendations, not claims that the complete stack has 
 
 ## Starting conditions and scope
 
-The existing management endpoint is `https://qnap3899.myqnapcloud.com:9443/`. The intended Portainer environments are QNAP's `local` environment and `dev-host` using Edge Agent Standard. These names and roles are supplied design inputs; endpoint IDs, reachability, edition, versions, TLS configuration, architecture, and spare capacity have not been inspected.
+The existing management endpoint is configured privately; this public document uses `https://portainer.example.test:9443/` as a placeholder. The intended Portainer environments are QNAP's `local` environment and `dev-host` using Edge Agent Standard. These names and roles are supplied design inputs; endpoint IDs, reachability, edition, versions, TLS configuration, architecture, and spare capacity have not been inspected.
 
 The confirmed agent runtimes are Codex CLI and Claude Code, with two to five concurrent workers. Dev-host has an Intel Ultra 7 265, 64 GiB RAM, and an RTX 5070 Ti, as reported by the operator. Start the pilot with one worker of each runtime, then test mixed workloads up to five workers. One operator, Linux execution, and externally hosted models remain planning assumptions; OS, subscription versus API authentication, storage, workload sizes, and GPU use remain open. Desktop applications or hardware-dependent development may need separate workspace classes. See the [inventory](inventory.md) for a provisional capacity budget.
 
