@@ -26,4 +26,5 @@ This is an author design review, not proof of live runtime behavior or independe
 - Author inspection: phase dependency order, required runtime coverage, rollout/rollback, secret boundaries, unexported-work preservation and observable acceptance criteria.
 - Live QNAP/dev-host tests: not run; explicitly assigned to phase issues.
 - GitHub Pages publication: pending merge and HTTP verification.
-- Independent Copilot review and CI: pending the plan-publication PR. No independent approval is claimed yet.
+- [Plan PR #1](https://github.com/unearth4334/dev-stack/pull/1): documentation CI passed on the initial reviewed revision. Copilot reviewed the plan/workflow and reported two checker portability findings: implicit text encoding and a Python 3.9-only path method. Both are corrected; re-review and final CI are pending.
+- Checker validation: UTF-8 documents pass; missing HTML anchors and symlink escapes outside the repository fail. These are manual fixture checks, not live runtime acceptance.

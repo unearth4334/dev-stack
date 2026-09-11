@@ -38,7 +38,7 @@ def main():
     links = []
     errors = []
     for path in paths:
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         if path.suffix == ".html":
             page = Page()
             page.feed(text)
@@ -57,17 +57,17 @@ def main():
         target = (path.parent / unquote(url.path)).resolve() if url.path else path
         if target.is_dir():
             target /= "index.html"
-        if not target.is_relative_to(ROOT) or not target.is_file():
+        if ROOT not in target.parents or not target.is_file():
             errors.append(f"{path.relative_to(ROOT)}: missing local target {link}")
         elif url.fragment and target.suffix == ".html":
             if target not in pages:
                 page = Page()
-                page.feed(target.read_text())
+                page.feed(target.read_text(encoding="utf-8"))
                 pages[target] = page
             if unquote(url.fragment) not in pages[target].ids:
                 errors.append(f"{path.relative_to(ROOT)}: missing HTML anchor {link}")
     for path in (ROOT / "examples").glob("*.json"):
-        json.loads(path.read_text())
+        json.loads(path.read_text(encoding="utf-8"))
     if errors:
         raise SystemExit("\n".join(errors))
     print(f"PASS: {len(paths)} documents; local links, HTML anchors, footnotes and example JSON.")
