@@ -53,3 +53,7 @@ The [Pilot v0.1 implementation plan](pilot/index.html) owns current phase orderi
 ## Terminal-first pilot clarification — September 11, 2026
 
 The operator deferred the web UI. Coder/OpenHands trials and browser publication are outside the pilot. The selected baseline is a Python CLI with SQLite control state on QNAP, a fixed-template Docker runner on dev-host, restricted SSH JSON control, and Termius with mosh/tmux for interactive access. Phase 1 validates this baseline rather than reopening the product shortlist. Historical research does not override this scope.
+
+## Multi-day session lifetime
+
+Quota-limited sessions lasting days are a confirmed operator requirement. Sessions/workspaces persist across quota waits and attempts. The legacy `task_deadline_minutes` key represents active-work minutes per attempt, excluding confirmed waits; a separate controller-disconnect deadline remains mandatory. See the [quota-wait contract](pilot/index.html#quota-waits). Runtime enforcement remains Phase 3 work, with retention protection in Phase 5 and P17 acceptance in Phase 6.

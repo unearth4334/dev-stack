@@ -126,11 +126,18 @@ services + limits         services + limits
 
 Portainer owns support stacks; the trusted runner
 owns task resources. Public GitHub Pages serves this plan only.</pre>
-<p>A workspace is the filesystem and execution boundary; a session is the provider conversation; an attempt is one bounded execution. Keep their identifiers and lifecycles separate. The task contract records project profile, resolved base commit, pinned runtime/image/skills, limits, grant references and result requirements. The <a href="https://github.com/unearth4334/dev-stack/blob/main/examples/task.example.json">existing manifest</a> remains illustrative until Phase 2 validates a concrete schema; never interpret arbitrary manifest fields as shell commands.</p>
-<p>Control persists intent before acknowledging or dispatching it. A local supervisor owns each attempt and confirms process-tree termination. An expired lease marks uncertainty; reconciliation must prove the old writer stopped before retrying. During a short controller outage, already authorized work runs only until its local deadline and spools bounded events. New tasks/grants wait. External side effects are observed before replay.</p>
-<p>Task states distinguish queued, provisioning, running, awaiting input, verifying, ready for review, succeeded, failed, cancelled and lost. Platform-specific states may map to these concepts. Agent exit, test verification and human review are separate evidence. Follow-up can occur at a safe turn boundary; an unsupported interactive approval must produce a blocked/denied outcome and explicit resume procedure.</p>
+<p>A workspace is the filesystem and execution boundary; a session is the provider conversation; an attempt is one bounded execution. A development session may span days and multiple attempts; its lifetime is not the attempt active-work budget. Keep their identifiers and lifecycles separate. The task contract records project profile, resolved base commit, pinned runtime/image/skills, limits, grant references and result requirements. The <a href="https://github.com/unearth4334/dev-stack/blob/main/examples/task.example.json">existing manifest</a> remains illustrative until Phase 2 validates a concrete schema; never interpret arbitrary manifest fields as shell commands.</p>
+<p>Control persists intent before acknowledging or dispatching it. A local supervisor owns each attempt and confirms process-tree termination. An expired lease marks uncertainty; reconciliation must prove the old writer stopped before retrying. During a short controller outage, already authorized work runs only until its independent local controller-disconnect deadline and spools bounded events. New tasks/grants wait. External side effects are observed before replay.</p>
+<p>Task states distinguish queued, provisioning, running, awaiting input, <code>waiting_for_quota</code>, verifying, ready for review, succeeded, failed, cancelled and lost. Platform-specific states may map to these concepts. Agent exit, test verification and human review are separate evidence. Follow-up can occur at a safe turn boundary; an unsupported interactive approval must produce a blocked/denied outcome and explicit resume procedure.</p>
 <p>Keep active checkouts and test databases on dev-host local storage. QNAP retains control metadata and captured results. Use independent clones first, isolated homes, per-task sidecars and narrow mounts. Prevent worker access to sibling data, the host Docker socket, operator credentials and management networks. Reviewed skill releases are pinned read-only; repository code and hooks execute inside the task boundary.</p>
 <p>Initial admission settings: two ordinary tasks at 4 GiB each, two CPU-equivalent quota each, and one heavy build at a time. The provisional 64 GiB budget reserves 16 GiB for host/existing services, 8 GiB for support/headroom and 40 GiB for aggregate tasks. Include sidecars and VM overhead; revise from measured available RAM and disk. Five 8 GiB tasks exhaust that task allowance. The GPU is outside ordinary profiles.</p>
+</section>
+<section id="quota-waits">
+<h2>Multi-day sessions and provider quota limits</h2>
+<p>Provider session limits are an expected daily condition, not task failure. Preserve the task, checkout, pending changes, provider session reference and isolated authentication state across multi-day waits. The existing configuration key <code>capacity.task_deadline_minutes</code> means active-work minutes per attempt (initially 120); it does not expire the development session. Runtime enforcement of these deadlines is not implemented yet. Exclude confirmed quota waits, operator-input waits and queued time from this clock; count active tool execution and do not infer waiting from a quiet terminal.</p>
+<p>Phase 3 persists <code>waiting_for_quota</code>, the provider/account scope of the limit, last safe checkpoint and a trustworthy retry time when available. Distinguish temporary throttling from exhausted quota, expired credentials and billing failures. Rate-limit retries, coordinate workers sharing an affected allowance and prevent retry storms. An unknown reset requires operator action or bounded backoff; never rotate identities or bypass provider limits. Automatic continuation is opt-in per task and must recheck authorization, credentials, budget and exclusive ownership.</p>
+<p>Keep a waiting tmux session when safe, or checkpoint and stop its execution container through the supervisor. Retained containers, sidecars and disk still count against capacity until stopped or released. Resume the same provider conversation where supported in a new attempt after reconciliation; do not relaunch a second writer. Record an explicit recovery limitation when the pinned CLI cannot restore its state. The controller-disconnect deadline remains independent of the active-work budget and also bounds any background tools.</p>
+<p>Quota/input waits do not start workspace cleanup or completed-result retention clocks. Preserve unfinished work until explicit completion or abandonment and verified capture; apply disk admission limits instead of deleting paused sessions. Phase 6 exercises a wait exceeding the active-work budget with a restart during the wait, then verifies safe continuation for both runtimes. Deterministic clock/adapter tests supplement actual provider resume tests; do not deliberately exhaust paid quota for testing.</p>
 </section>
 <section id="alternatives">
 <h2>Selected baseline and compatibility gates</h2>
@@ -258,7 +265,8 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <li>Implement or configure one adapter per required CLI behind the selected interface, preserving provider session IDs and pinned protocol versions.</li>
 <li>Record tasks, attempts, workspaces, events, verification, grant references and pending input separately; persist intent before dispatch.</li>
 <li>Support follow-up at a safe turn boundary and permission/denial handling. If an interface cannot answer interactive approvals, record a blocked result and a controlled resume path instead of auto-approving.</li>
-<li>Add idempotency, attempt ownership, local deadline and bounded event spool, process-group cancellation and restart reconciliation.</li>
+<li>Add idempotency, attempt ownership, active-work accounting, an independent controller-disconnect deadline, bounded event spool, process-group cancellation and restart reconciliation.</li>
+<li>Implement the <a href="#quota-waits">quota-wait lifecycle</a>: persisted wait reason/reset hints, provider-aware bounded retries, opt-in continuation and safe checkpoint/resume for both CLIs.</li>
 <li>Use platform lifecycle APIs where available; custom code is limited to gaps recorded in Phase 1.</li>
 </ul>
 <p>
@@ -278,10 +286,10 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <li>Duplicate submission/start and controller disconnect never produce simultaneous attempts writing the same workspace.</li>
 <li>Cancellation is not reported complete until the task process tree is gone; a supervisor restart yields a recovered or explicitly lost attempt.</li>
 <li>A failing test after a successful agent exit stays failed/ready for correction, never succeeded.</li>
-<li>Event replay resumes after a sequence number without losing terminal state; local deadlines apply during a control outage.</li>
+<li>Event replay resumes after a sequence number without losing terminal state; independent controller-disconnect deadlines apply during a control outage, including quota waits with background processes.</li>
 </ul>
 <p>
-<strong>Verification:</strong> Adapter contract tests and live smoke tests for both CLIs; inject disconnects, duplicate starts, denial, failed tests, child processes and supervisor restart. Capture P03–P08 and P14 evidence without publishing private transcripts.</p>
+<strong>Verification:</strong> Adapter contract tests and live smoke tests for both CLIs; inject disconnects, duplicate starts, denial, failed tests, child processes and supervisor restart. Capture P03–P08, P14 and P17 evidence without publishing private transcripts.</p>
 <p>
 <strong>Deliverables and documentation:</strong> Selected adapters/configuration, lifecycle/state documentation, failure-injection tests, auth compatibility matrix and operator resume/cancel runbook. Record unsupported semantics explicitly.</p>
 <p>
@@ -332,7 +340,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <li>Collect immutable per-attempt summaries, patches, verification and provenance, with optional plans/screenshots; validate upload paths, symlinks, size and content policy.</li>
 <li>Store private per-attempt directories on QNAP, referenced by CLI task status and accessible through a scoped SSH/SFTP identity. Keep output separate from live workspaces and public GitHub Pages.</li>
 <li>Retain text/Markdown, patches and manifests as files. Do not host or automatically render active HTML; browser publication and live previews are deferred.</li>
-<li>Implement retention with separate stop/delete operations, dirty/unpushed-work safeguards, bounded logs/storage and artifact-backed cleanup.</li>
+<li>Implement retention with separate stop/delete operations, dirty/unpushed-work safeguards, bounded logs/storage and artifact-backed cleanup. Unfinished quota/input-waiting sessions do not age into completed-task cleanup.</li>
 <li>Back up control state and results; test restore and worker loss, distinguishing recoverable captured output from lost uncheckpointed work.</li>
 </ul>
 <p>
@@ -355,7 +363,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <li>A clean restore reconstructs task/result links and verifies artifact digests; any loss window is measured and documented.</li>
 </ul>
 <p>
-<strong>Verification:</strong> Collector negative tests; destructive disposable-worker test; authenticated CLI/SFTP checks; disk-pressure and retention tests; control-plus-artifact restore. Record P09–P12 evidence.</p>
+<strong>Verification:</strong> Collector negative tests; destructive disposable-worker test; authenticated CLI/SFTP checks; disk-pressure and retention tests; control-plus-artifact restore. Record P09–P12 and P17 evidence.</p>
 <p>
 <strong>Deliverables and documentation:</strong> Collector/publication configuration, result manifest contract, retention and backup/restore runbooks, recovery measurements and operator result links. Update task documentation.</p>
 <p>
@@ -385,7 +393,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <h3>Observable completion criteria</h3>
 <ul>
 <li>Both runtimes operate concurrently from the QNAP entry point; a measured mixed five-worker run completes without boundary violations, missing accepted tasks or unaccounted resources.</li>
-<li>Required acceptance scenarios P01–P16 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
+<li>Required acceptance scenarios P01–P17 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
 <li>A representative working-day soak has bounded disk/log use, no unexplained orphans and documented provider/capacity behavior.</li>
 <li>The operator can recover a task and restore control/results using the committed runbook, with observed recovery time and loss window.</li>
 <li>All prerequisite PRs are merged, plan/issue status matches deployed behavior and every deferred enhancement has an explicit follow-up record.</li>
@@ -489,9 +497,14 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <td>Both interactive CLIs retain the same remote tmux session across network loss and client restart; reconnect/handoff creates no duplicate writer. Record mosh roaming and SSH fallback behavior separately.</td>
 <td>3, 4, 6</td>
 </tr>
+<tr>
+<td>P17</td>
+<td>Both runtimes preserve session/workspace through a quota wait exceeding the active-work budget and a controller restart; safe resume creates one writer, enforces fresh grants and does not delete waiting work or create retry storms.</td>
+<td>3, 5, 6</td>
+</tr>
 </tbody>
 </table>
-<p>The earlier roadmap used A01–A15. This pilot uses P01–P16 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred. Private result access and credential separation remain mandatory; browser publication is deferred.</p>
+<p>The earlier roadmap used A01–A15. This pilot uses P01–P17 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred. Private result access and credential separation remain mandatory; browser publication is deferred.</p>
 </section>
 <section id="release">
 <h2>Compatibility, release and rollback</h2>
