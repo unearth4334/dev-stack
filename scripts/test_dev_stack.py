@@ -24,11 +24,18 @@ class SetupTests(unittest.TestCase):
         self.profile = {'portainer': {'url': 'https://portainer.example.test:9443', 'control_environment': 'local', 'worker_environment': 'dev-host', 'credential_profile': 'pilot'}}
 
     def test_rejects_unsafe_inputs_without_echo(self):
-        for kind, value in [('https', 'http://host'), ('https', 'https://user:secret@host'), ('https', 'https://host/path'), ('https', 'https://host:99999'), ('https', 'https://host?key=secret'), ('alias', '-oProxyCommand=bad'), ('remote_path', '/'), ('remote_path', '/srv/../etc'), ('workers', True), ('workers', 6), ('positive', 0), ('argv', 'sh -c bad'), ('argv', ['echo', '\n']), ('commit', 'main'), ('auth', 'oauth-token')]:
+        for kind, value in [('https', 'http://host'), ('https', 'https://user:secret@host'), ('https', 'https://host/path'), ('https', 'https://host:99999'), ('https', 'https://host?key=secret'), ('alias', '-oProxyCommand=bad'), ('remote_path', '/'), ('remote_path', '/srv/../etc'), ('workers', True), ('workers', 6), ('positive', 0), ('argv', 'sh -c bad'), ('argv', ['echo', '\n']), ('argv', ['echo', '\x7f']), ('hosts', ['host\x7f']), ('argv', []), ('commit', 'main'), ('auth', 'oauth-token')]:
             with self.subTest(kind=kind, value=value):
                 with self.assertRaises(ds.ConfigError) as error:
                     ds.validate_value(kind, value)
                 self.assertNotIn('secret', str(error.exception))
+
+    def test_explicit_deny_all_egress_is_distinct_from_unknown(self):
+        self.assertEqual(ds.validate_value('hosts', []), [])
+        ds.validate_profile({'fixture': {'allowed_egress': []}})
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            ds.doctor({'fixture': {'allowed_egress': []}}, 'pilot')
+        self.assertNotIn('MISSING fixture.allowed_egress', output.getvalue())
 
     def test_cross_field_budget_and_paths(self):
         invalid = [

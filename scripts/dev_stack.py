@@ -98,9 +98,9 @@ def validate_value(kind, value):
             raise ConfigError(f'Enter an integer from {minimum} to {maximum}.')
         return value
     if kind in {'argv', 'hosts'}:
-        if not isinstance(value, list) or not value or not all(isinstance(v, str) and v.strip() for v in value):
-            raise ConfigError('Enter a nonempty JSON array of nonempty strings.')
-        if any(any(ord(c) < 32 for c in v) for v in value):
+        if not isinstance(value, list) or (kind == 'argv' and not value) or not all(isinstance(v, str) and v.strip() for v in value):
+            raise ConfigError('Enter a JSON array of nonempty strings; verification argv must not be empty.')
+        if any(any(ord(c) < 32 or ord(c) == 127 for c in v) for v in value):
             raise ConfigError('Control characters are not allowed.')
         if kind == 'hosts' and any(not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]*', v) for v in value):
             raise ConfigError('Use host names or IPv4 addresses; no schemes, ports or wildcards.')
