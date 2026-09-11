@@ -12,10 +12,10 @@
 <a href="../index.html">Dev stack</a> · <a href="https://github.com/unearth4334/dev-stack">Repository</a> · <a href="#status">Phase status</a>
 </nav>
 <h1>Pilot v0.1: concurrent agent workspaces</h1>
-<p class="summary">Operate Codex CLI and Claude Code in isolated environments on dev-host, with a private QNAP control surface and durable, reviewable results. Start with two workers; validate a mixed workload at five.</p>
+<p class="summary">Operate Codex CLI and Claude Code in isolated environments on dev-host, with a private QNAP command-line controller and durable, reviewable results. Start with two workers; validate a mixed workload at five.</p>
 <section id="status">
 <h2>Status and delivery tracking</h2>
-<p>Planning baseline: September 10, 2026. No pilot services are deployed. The author design review and completed Copilot review are recorded in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/pilot/review.md">review record</a> and <a href="https://github.com/unearth4334/dev-stack/pull/1">merged plan PR #1</a>. The merged plan was verified on Pages before the milestone and phase issues were created. Phase states below are a maintained snapshot; GitHub issues are the live work inventory.</p>
+<p>Planning baseline: September 11, 2026; web UI deferred by operator request. No pilot services are deployed. The author design review and completed Copilot review are recorded in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/pilot/review.md">review record</a> and <a href="https://github.com/unearth4334/dev-stack/pull/1">merged plan PR #1</a>. The merged plan was verified on Pages before the milestone and phase issues were created. Phase states below are a maintained snapshot; GitHub issues are the live work inventory.</p>
 <p id="milestone-link">Milestone: <a href="https://github.com/unearth4334/dev-stack/milestone/1">Pilot v0.1 — concurrent agent workspaces</a>. No due date is committed until host access and the Phase 0 baseline are verified.</p>
 <table>
 <thead>
@@ -40,7 +40,7 @@
 <tr>
 <td>1</td>
 <td>
-<a href="#phase-1">Select the pilot workspace owner and agent control surface</a>
+<a href="#phase-1">Prove the terminal-first workspace and agent contracts</a>
 </td>
 <td>Phase 0 merged</td>
 <td id="issue-1"><a href="https://github.com/unearth4334/dev-stack/issues/3">#3</a> — Blocked on prerequisite</td>
@@ -104,27 +104,27 @@
 <p>Required outcomes are reproducible task environments, both agent runtimes, private remote operation, structured progress and follow-up, verified cancellation, restart reconciliation, scoped credentials, retained results and a demonstrated restore. The milestone ends with live two-to-five-worker evidence and an operator runbook.</p>
 <p>Confirmed inputs: dev-host has an Intel Ultra 7 265, 64 GiB RAM and RTX 5070 Ti. QNAP hosts control services in its local Portainer environment; dev-host is managed through Edge Agent Standard. Hardware is operator-reported, not independently inspected. OS, storage, QNAP headroom, authentication modes and private routing remain Phase 0 gates.</p>
 <p>The initial trust class is operator-approved repositories with synthetic development data. This is not a hostile multi-tenant service. Ordinary workers get neither production credentials nor host management authority. If required repositories are untrusted or need privileged builds, choose an appropriate VM/microVM boundary before running them.</p>
-<p>Deferred work: GPU/local inference, multi-user SSO, high availability, Kubernetes, a custom general-purpose UI, mandatory central secret-manager migration, public previews, S3 storage, automated Git integration/deployment and comprehensive transcript analytics. A protected existing secret store and narrow injection are sufficient for the pilot if its scope and rotation tests pass. These deferrals do not waive credential isolation, private results or recovery.</p>
+<p>Deferred work: GPU/local inference, multi-user SSO, high availability, Kubernetes, all runtime web UIs (including Coder/OpenHands), browser terminals, dashboards, mandatory central secret-manager migration, public previews, S3 storage, automated Git integration/deployment and comprehensive transcript analytics. A protected existing secret store and narrow injection are sufficient for the pilot if its scope and rotation tests pass. These deferrals do not waive credential isolation, private results or recovery.</p>
 <p>Planning and issue publication are authorized setup work. Each future live rollout must identify its exact target and follow the existing deployment workflow. A milestone or installed skill does not give a coding worker unrestricted deployment authority.</p>
 </section>
 <section id="design">
-<h2>Proposed design and ownership</h2>
-<pre aria-label="Logical architecture">Operator browser / CLI
+<h2>Pilot design and ownership</h2>
+<pre aria-label="Logical architecture">Operator: Termius / CLI
           |
           v
-QNAP: private entry + selected control service + durable state
+QNAP: SSH command entry + Python controller + SQLite state
           | private authenticated control
           v
-dev-host: trusted workspace owner / supervisor
+dev-host: trusted fixed-template Docker runner / supervisor
           |                     |
           v                     v
 Task A: Codex CLI         Task B: Claude Code
 checkout + home           checkout + home
 services + limits         services + limits
           \                     /
-           -- validated results --&gt; QNAP private publication
+           -- validated results --&gt; QNAP private result directories
 
-Portainer owns support stacks; the selected workspace owner
+Portainer owns support stacks; the trusted runner
 owns task resources. Public GitHub Pages serves this plan only.</pre>
 <p>A workspace is the filesystem and execution boundary; a session is the provider conversation; an attempt is one bounded execution. Keep their identifiers and lifecycles separate. The task contract records project profile, resolved base commit, pinned runtime/image/skills, limits, grant references and result requirements. The <a href="https://github.com/unearth4334/dev-stack/blob/main/examples/task.example.json">existing manifest</a> remains illustrative until Phase 2 validates a concrete schema; never interpret arbitrary manifest fields as shell commands.</p>
 <p>Control persists intent before acknowledging or dispatching it. A local supervisor owns each attempt and confirms process-tree termination. An expired lease marks uncertainty; reconciliation must prove the old writer stopped before retrying. During a short controller outage, already authorized work runs only until its local deadline and spools bounded events. New tasks/grants wait. External side effects are observed before replay.</p>
@@ -133,20 +133,22 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <p>Initial admission settings: two ordinary tasks at 4 GiB each, two CPU-equivalent quota each, and one heavy build at a time. The provisional 64 GiB budget reserves 16 GiB for host/existing services, 8 GiB for support/headroom and 40 GiB for aggregate tasks. Include sidecars and VM overhead; revise from measured available RAM and disk. Five 8 GiB tasks exhaust that task allowance. The GPU is outside ordinary profiles.</p>
 </section>
 <section id="alternatives">
-<h2>Platform selection and consequential trade-offs</h2>
-<p>Phase 1 selects concrete components before implementation. Coder Workspaces is the first environment-management candidate; test QNAP placement, dev-host provisioning and edition entitlement. Coder's native agent is optional and cannot replace the required CLIs by assumption. OpenHands Agent Canvas is the first agent-UI candidate, subject to adapter compatibility and mitigation of its documented shared-origin editor/backend-key risk. A fixed-template native runner plus a private index is the fallback, not a mandate to build a new framework.</p>
-<p>Choose one lifecycle owner for each resource. Portainer may observe task containers but must not compete with their workspace controller. Its Standard Edge tunnel does not provide general-purpose SSH, preview or Terraform connectivity. Use structured agent interfaces; SSH/tmux are operator access, and mosh is optional human convenience. Experimental transports must be tested at pinned versions and contained behind the selected private interface.</p>
-<p>Docker Sandboxes or another established VM runtime is a conditional isolation option when the host and workload warrant it. Vibe Kanban's company shutdown/community transition and Daytona's unmaintained public core make them reference designs rather than foundations for this pilot. Source evidence and qualifications are in the <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/research.md">research report</a>.</p>
+<h2>Selected baseline and compatibility gates</h2>
+<p>Use a small Python command-line controller on QNAP, SQLite on QNAP-local storage, and a trusted Python supervisor on dev-host driving fixed Docker templates. Portainer owns only pilot support stacks; the runner alone owns per-task containers, networks and volumes. Use independent clones and nonroot task containers. This is the selected pilot direction, conditional on Phase 0 host compatibility and Phase 1 boundary tests, not an invitation to repeat the product search.</p>
+<p>Use SSH with a dedicated restricted service identity for structured QNAP-to-dev-host requests, carrying validated JSON to a fixed command without constructing shell commands from task input. Human access uses Termius with mosh plus tmux; SSH plus tmux is the fallback. Attach through a task-ID allowlist to tmux inside the task container. The operator gateway may request attach/status/cancel; agent processes do not receive its host authority. Mosh UDP must travel over the private network independently of the Portainer Edge tunnel.</p>
+<p>Docker shares a host kernel and is the baseline for trusted personal repositories with synthetic data, not hostile workloads. <a href="https://docs.docker.com/engine/security/">Docker daemon access is privileged</a>; only the reviewed runner receives it. Phase 1 proves network restrictions and effective limits on the actual host. If these cannot be enforced, or the fixture needs privileged/internal Docker builds, record a VM or separate-builder decision before proceeding. No worker gets the host Docker socket.</p>
+<p>Defer Coder, OpenHands Canvas, a custom dashboard, HTTP control APIs and browser result publication. Preserve the earlier product research as background. Use command-line status/events and private SFTP/downloadable artifacts for the pilot. Shared skills remain reviewed Git content pinned to a revision; use existing protected credentials rather than deploying a new secrets platform.</p>
 </section>
 <section id="sequencing">
 <h2>Phases and sequencing</h2>
-<p>Deliver one pull request per phase issue. Phase 0 is ready for investigation; each later phase starts only after its prerequisite PR is merged and its gate passes. Phase 1 must update downstream issues with selected components before implementation. Do not couple unmerged branches. Estimated total is roughly 8–15 engineering days plus one representative working-day soak; revise after inventory and platform selection, and do not treat this as a due-date promise.</p>
+<p>Deliver one pull request per phase issue. Phase 0 is ready for investigation; each later phase starts only after its prerequisite PR is merged and its gate passes. Phase 1 must record tested versions and contracts in downstream issues before implementation. Do not couple unmerged branches. Estimated total is roughly 8–15 engineering days plus one representative working-day soak; revise after inventory and compatibility testing, and do not treat this as a due-date promise.</p>
 </section>
 <section id="phase-0">
 <h2>Phase 0 — Verify hosts, access, authentication, and pilot workload</h2>
 <p>Only reported hardware and intended placement are known. OS, QNAP capacity, credentials, private routing, and representative test workloads are not verified, so a deployable topology cannot yet be selected.</p>
 <h3>Scope</h3>
 <ul>
+<li>Collect user-local settings with the configuration wizard described in <a href="https://github.com/unearth4334/dev-stack/blob/main/docs/configuration.md">configuration and variables</a>; unknown values remain explicit blockers. Configuration alone is not verified inventory.</li>
 <li>Complete a sanitized inventory of QNAP and dev-host, including OS/runtime, local disk, cgroups/virtualization, existing workloads and spare capacity.</li>
 <li>Verify exact Portainer environments, TLS trust, edition and read-only diagnostics; establish a private control path independent of the Edge tunnel.</li>
 <li>Confirm supported authentication for both Codex CLI and Claude Code, provider limits, operator access and authorized test targets.</li>
@@ -176,40 +178,40 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <p>
 <strong>Rollback:</strong> Remove disposable authentication-test environments and revoke temporary credentials; do not change existing stacks.</p>
 </section>
+<section id="mobile-access">
+<h2>Mobile terminal access</h2>
+<p>The pilot has no runtime web UI. Phase 0 records phone OS, Termius version and the private network route. Phase 1 proves the operator can list tasks, attach to each CLI, enter prompts, respond to approvals, detach and cancel using the phone's software keyboard. Results are available through CLI/SFTP; public GitHub Pages continues to publish only this plan.</p>
+<p><a href="https://www.termius.com/blog/8-tips-for-using-ai-agents-on-mobile-in-termius">Termius recommends tmux for remote process persistence and mosh for network changes</a>. Run the interactive agent inside tmux in its task workspace. Mosh handles temporary outages and roaming while its client session survives; after the client is closed, reconnect and attach to the existing tmux session. SSH plus tmux requires reconnection and reattachment. Neither preserves processes through workspace termination or host reboot.</p>
+<p>Test Wi-Fi/cellular transitions, temporary loss, phone suspension and Termius force-close/reopen with both CLIs. Reattachment must not launch another agent. A headless task is not automatically an interactive terminal: Phase 3 defines an explicit handoff that stops and reconciles the existing attempt before provider-session resume. Never infer structured task state by scraping a tmux screen.</p>
+</section>
 <section id="phase-1">
-<h2>Phase 1 — Select the pilot workspace owner and agent control surface</h2>
-<p>The research shortlist has consequential compatibility and licensing uncertainties. Building a custom scheduler or adopting multiple controllers before testing them risks duplicate ownership and rework.</p>
+<h2>Phase 1 — Prove the terminal-first workspace and agent contracts</h2>
+<p>Validate the selected Docker/Python/SSH baseline on one disposable fixture before permanent provisioning. Coder/OpenHands evaluation and all web UI work are deferred.</p>
 <h3>Scope</h3>
 <ul>
-<li>Run a timeboxed vertical trial of Coder Workspaces and OpenHands Agent Canvas where Phase 0 prerequisites permit; compare against a fixed-template native runner.</li>
-<li>Use one isolated disposable worker with a scoped credential for each required CLI. Exercise structured events, a follow-up turn, a denied action, cancellation and a retained patch.</li>
-<li>Record exact versions, supported transports, auth behavior, service placement, resource ownership and paid-feature dependencies.</li>
-<li>Select one workspace owner and one control path, with a narrow list of missing capabilities to implement. Evaluate microVMs only if the selected workload requires a stronger boundary or internal container builds.</li>
+<li>Prove one fixed-template nonroot container, independent checkout/home and restricted network on dev-host; observe cgroup limits and deny access to sibling data, host sockets and management networks.</li>
+<li>Pin both CLI versions and test their documented structured execution, denial and resume interfaces. Separately prove interactive tmux attachment for each CLI from Termius.</li>
+<li>Define the fixed SSH JSON command boundary, task IDs, sole Docker owner, operator attach gateway and restricted service identity. No arbitrary remote shell or repository-controlled provisioning templates.</li>
+<li>Record exact versions, image digests, auth modes and a concrete fallback decision only if host/workload compatibility fails.</li>
 </ul>
-<p>
-<strong>Non-goals:</strong> No indefinite product search, new general-purpose agent framework, mandatory replacement of Codex/Claude by a native platform agent, or production rollout.</p>
-<p>
-<strong>Dependency:</strong> Phase 0 must be merged and its gate passed.</p>
+<p><strong>Non-goals:</strong> No web UI, product bake-off, general-purpose agent framework, new model harness, or permanent rollout.</p>
+<p><strong>Dependency:</strong> Phase 0 merged and its live inventory/auth gates passed.</p>
 <h3>Failure modes and implementation traps</h3>
 <ul>
-<li>Coder external-provisioner entitlement and remote Docker access must be verified; do not route Terraform through Portainer&#x27;s Edge tunnel by assumption.</li>
-<li>Canvas documents a shared-origin editor/backend-key risk; require a supported tested mitigation or reject that UI for the pilot.</li>
-<li>Native CLI wrappers and experimental transports must pass the required lifecycle/auth tests at pinned versions. Two conversations in one backend are not two isolated workers.</li>
-<li>No candidate may run trusted provisioning with repository-controlled mounts, hooks or templates outside the disposable task boundary.</li>
+<li>Docker networks alone do not guarantee egress isolation. Prove host/private-address and IPv6 behavior before adopting the template.</li>
+<li>Portainer Edge is not an SSH or mosh tunnel. The phone and controller need verified private routes.</li>
+<li>Interactive tmux state and structured provider sessions are different contracts; unsupported handoff must block rather than create concurrent writers.</li>
 </ul>
 <h3>Observable completion criteria</h3>
 <ul>
-<li>A committed decision records the winning composition, rejected alternatives, test evidence, license constraints and the sole owner of every resource.</li>
-<li>Both required CLIs complete the trial through the selected control interface; denial, cancellation and follow-up behavior are observable without screen scraping.</li>
-<li>The chosen topology supports private QNAP control and dev-host execution without unresolved credential or browser-origin blockers.</li>
-<li>Downstream phase scopes name concrete components; each remaining gap has an explicit implementation owner and acceptance criterion.</li>
+<li>Both CLIs complete the fixture, deny an ungranted action and demonstrate a safe follow-up at pinned versions.</li>
+<li>The actual phone can list and attach to task sessions; permissions and keyboard input work without a web UI.</li>
+<li>The selected topology has demonstrated isolation, private access and sole resource ownership, with no unresolved prerequisite for Phase 2.</li>
+<li>A committed contract names concrete components, remaining implementation work and its phase owner.</li>
 </ul>
-<p>
-<strong>Verification:</strong> Run the same fixture and control scenarios for each eligible candidate; capture sanitized events and measured startup/resource use. Timebox to two engineering days, recording any extension decision instead of silently expanding scope.</p>
-<p>
-<strong>Deliverables and documentation:</strong> Commit the selection record under docs/pilot/ and update the plan plus downstream issues before Phase 2 begins. Retain only reusable trial assets, with pinned versions; remove abandoned candidate configuration.</p>
-<p>
-<strong>Rollback:</strong> Remove trial services and credentials by exact ownership labels; restore the pre-trial resource inventory.</p>
+<p><strong>Verification:</strong> Disposable-host boundary probes and live CLI/Termius smoke tests with sanitized evidence. Timebox to two engineering days; record any extension.</p>
+<p><strong>Deliverables and documentation:</strong> Pinned baseline, SSH request/response and attach contracts, compatibility evidence, updated downstream scopes.</p>
+<p><strong>Rollback:</strong> Stop and remove only labeled disposable trial resources; revoke trial grants and retain the findings.</p>
 </section>
 <section id="phase-2">
 <h2>Phase 2 — Provision reproducible isolated workspaces with scoped credentials</h2>
@@ -290,10 +292,10 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <p>The pilot cannot yet be operated independently of a local terminal. It needs a durable QNAP entry point and authenticated control of dev-host without giving workers infrastructure authority.</p>
 <h3>Scope</h3>
 <ul>
-<li>Deploy the selected control service/UI and durable state on QNAP, with a trusted supervisor or supported provisioner on dev-host and a private authenticated connection.</li>
-<li>Provide an operator task list showing runtime, task state, pending input, verification and links to task access/results. Reuse the selected UI; a simple authenticated index is sufficient if documented in Phase 1.</li>
+<li>Deploy the Python command-line controller and SQLite state on QNAP, with the trusted dev-host supervisor and the fixed authenticated SSH command path.</li>
+<li>Provide CLI task listing, status and bounded events showing runtime, pending input, verification, attach instructions and private result paths. Provide human-readable and JSON output.</li>
 <li>Expose submit, status, safe follow-up/resume, cancel and emergency stop for new dispatch; persist accepted requests before acknowledging them.</li>
-<li>Configure least-privilege service accounts, TLS, restart behavior, bounded logs and a controller-state backup/restore procedure.</li>
+<li>Configure least-privilege service accounts, verified SSH host keys, restart behavior, bounded logs and a controller-state backup/restore procedure.</li>
 <li>Deploy only the named pilot support stacks through the existing authorized Portainer workflow, with pinned artifacts and observed health verification.</li>
 </ul>
 <p>
@@ -304,7 +306,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <ul>
 <li>Pages hosts the public plan only; it must never host runtime credentials, private task results or the control API.</li>
 <li>QNAP and dev-host may have different architectures; verify image manifests and avoid building on the NAS by accident.</li>
-<li>Do not mount QNAP&#x27;s Docker socket into an autonomous planner. Coder/Portainer/workspace ownership must remain unambiguous.</li>
+<li>Do not mount QNAP&#x27;s Docker socket into an autonomous planner. Portainer/runner ownership must remain unambiguous.</li>
 <li>Schema upgrades must have a restore procedure. QNAP restarts must not trigger duplicate dispatch or erase waiting questions.</li>
 </ul>
 <h3>Observable completion criteria</h3>
@@ -328,8 +330,8 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <h3>Scope</h3>
 <ul>
 <li>Collect immutable per-attempt summaries, patches, verification and provenance, with optional plans/screenshots; validate upload paths, symlinks, size and content policy.</li>
-<li>Publish a private authenticated results index on QNAP, linked from task status. Keep published output separate from live workspaces and public GitHub Pages.</li>
-<li>Serve text/Markdown and downloads safely; render active HTML only on a verified isolated origin. Defer live application previews unless the fixture requires them.</li>
+<li>Store private per-attempt directories on QNAP, referenced by CLI task status and accessible through a scoped SSH/SFTP identity. Keep output separate from live workspaces and public GitHub Pages.</li>
+<li>Retain text/Markdown, patches and manifests as files. Do not host or automatically render active HTML; browser publication and live previews are deferred.</li>
 <li>Implement retention with separate stop/delete operations, dirty/unpushed-work safeguards, bounded logs/storage and artifact-backed cleanup.</li>
 <li>Back up control state and results; test restore and worker loss, distinguishing recoverable captured output from lost uncheckpointed work.</li>
 </ul>
@@ -339,21 +341,21 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <strong>Dependency:</strong> Phase 4 must be merged and its gate passed.</p>
 <h3>Failure modes and implementation traps</h3>
 <ul>
-<li>Artifact names are untrusted: reject path traversal, symlinks and archive escapes. A shared origin or parent-domain cookie can expose backend keys.</li>
+<li>Artifact names are untrusted: reject path traversal, symlinks and archive escapes. Do not auto-extract archives or execute generated content during collection.</li>
 <li>A partial upload must not look complete; publish the verified manifest last or atomically promote a completed directory.</li>
 <li>Expiry does not authorize deleting dirty/unexported work. Retained databases and logs can exhaust disk too.</li>
 <li>NAS snapshots alone may not be transactionally consistent for control databases; use the chosen database&#x27;s supported backup method.</li>
 </ul>
 <h3>Observable completion criteria</h3>
 <ul>
-<li>A fresh authenticated browser can read the summary, download the patch and inspect verification after the source worker is destroyed.</li>
+<li>A fresh authenticated SSH/SFTP session can read the summary, retrieve the patch and inspect verification after the source worker is destroyed.</li>
 <li>Cross-task upload/read and path-escape probes fail; partial/oversized uploads are not listed as complete results.</li>
 <li>Untrusted result content cannot execute with access to control-plane credentials; live workspaces and private artifacts are absent from the public Pages site.</li>
 <li>Cleanup preserves unexported/dirty work, stops at configured limits and touches only owned resources.</li>
 <li>A clean restore reconstructs task/result links and verifies artifact digests; any loss window is measured and documented.</li>
 </ul>
 <p>
-<strong>Verification:</strong> Collector negative tests; destructive disposable-worker test; authenticated browser checks; disk-pressure and retention tests; control-plus-artifact restore. Record P09–P12 evidence.</p>
+<strong>Verification:</strong> Collector negative tests; destructive disposable-worker test; authenticated CLI/SFTP checks; disk-pressure and retention tests; control-plus-artifact restore. Record P09–P12 evidence.</p>
 <p>
 <strong>Deliverables and documentation:</strong> Collector/publication configuration, result manifest contract, retention and backup/restore runbooks, recovery measurements and operator result links. Update task documentation.</p>
 <p>
@@ -383,7 +385,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <h3>Observable completion criteria</h3>
 <ul>
 <li>Both runtimes operate concurrently from the QNAP entry point; a measured mixed five-worker run completes without boundary violations, missing accepted tasks or unaccounted resources.</li>
-<li>Required acceptance scenarios P01–P14 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
+<li>Required acceptance scenarios P01–P16 pass with commands, versions and sanitized evidence; any failure keeps the milestone open.</li>
 <li>A representative working-day soak has bounded disk/log use, no unexplained orphans and documented provider/capacity behavior.</li>
 <li>The operator can recover a task and restore control/results using the committed runbook, with observed recovery time and loss window.</li>
 <li>All prerequisite PRs are merged, plan/issue status matches deployed behavior and every deferred enhancement has an explicit follow-up record.</li>
@@ -477,9 +479,19 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <td>Pinned adapter upgrade/revert preserves required event, permission, auth and resume behavior.</td>
 <td>3, 6</td>
 </tr>
+<tr>
+<td>P15</td>
+<td>Actual phone completes CLI task listing, tmux attachment, prompting, permission response, detach and cancellation with the software keyboard; private result paths are discoverable.</td>
+<td>1, 4, 6</td>
+</tr>
+<tr>
+<td>P16</td>
+<td>Both interactive CLIs retain the same remote tmux session across network loss and client restart; reconnect/handoff creates no duplicate writer. Record mosh roaming and SSH fallback behavior separately.</td>
+<td>3, 4, 6</td>
+</tr>
 </tbody>
 </table>
-<p>The earlier roadmap used A01–A15. This pilot uses P01–P14 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred unless selected as necessary for the fixture. Private result publication and browser credential separation remain mandatory.</p>
+<p>The earlier roadmap used A01–A15. This pilot uses P01–P16 to avoid confusing scope: automated merge testing (A12) and live application previews are deferred. Private result access and credential separation remain mandatory; browser publication is deferred.</p>
 </section>
 <section id="release">
 <h2>Compatibility, release and rollback</h2>
@@ -497,7 +509,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 <h2>Open decisions and follow-up ownership</h2>
 <ul>
 <li>Phase 0: actual OS/storage/QNAP headroom, provider auth modes, private routing, trusted fixture, deployment target grants and budget.</li>
-<li>Phase 1: workspace/control products, license entitlement, kernel boundary, concrete adapter interfaces, and UI credential isolation.</li>
+<li>Phase 1: tested Docker boundary, pinned CLI versions, structured adapter contracts and restricted SSH/tmux gateway.</li>
 <li>Phase 2: enforceable resource limits, secret delivery backend and immutable skill distribution.</li>
 <li>Phase 4–5: private endpoint configuration, storage/backup method, measured recovery window and artifact content policy.</li>
 <li>Phase 6: validated routine concurrency and any deferred roadmap work, assigned to a follow-up record before closing the milestone.</li>
@@ -506,6 +518,7 @@ owns task resources. Public GitHub Pages serves this plan only.</pre>
 </section>
 <section id="history">
 <h2>Decision history and references</h2>
+<p>September 11, 2026: operator deferred the runtime web UI. Selected a terminal-first Docker/Python/SSH baseline, private file artifacts and mosh/tmux phone access; added configuration collection before live inventory. Earlier UI research remains historical.</p>
 <p>September 11, 2026: plan PR #1 merged after author review, three Copilot review passes and green CI. Published the verified plan, created milestone 1 and staged phase issues #2–#8. All implementation phases remain open.</p>
 <p>September 10, 2026: narrowed the original platform roadmap to a runnable pilot. Moved product selection before permanent implementation, made scoped credentials a prerequisite for live execution, and separated public planning from private runtime artifacts. Kept central secret-manager migration, GPU work and automated releases as later platform work.</p>
 <ul>

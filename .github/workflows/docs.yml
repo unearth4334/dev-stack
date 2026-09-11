@@ -1,4 +1,4 @@
-name: Documentation checks
+name: Repository checks
 on:
   pull_request:
   push:
@@ -13,3 +13,4 @@ jobs:
         with:
           persist-credentials: false
       - run: python3 scripts/check_docs.py
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
