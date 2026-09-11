@@ -24,7 +24,7 @@ FIELDS = {
         'control_environment': ('Exact QNAP environment name', 'text', 'local'),
         'worker_environment': ('Exact dev-host environment name', 'text', 'dev-host'),
         'credential_profile': ('Portainer deploy credential profile name', 'name', 'pilot'),
-        'ca_bundle': ('Local CA bundle path (optional; blank uses system trust)', 'local_file', None),
+        'ca_bundle': ('Local CA bundle path (optional; ? selects system trust)', 'local_file', None),
     },
     'access': {
         'qnap_ssh': ('QNAP SSH config alias (on this workstation)', 'alias', None),
@@ -314,7 +314,7 @@ def credentials(profile, name, kind):
     variables, service, account = credential_spec(profile, name, kind)
     keyring = native_keyring()
     if keyring is None:
-        raise ConfigError('No supported native keyring. Use an environment variable: ' + variables[0] + '. No plaintext fallback.')
+        raise ConfigError('No supported native keyring. Use an environment variable (precedence order): ' + ', '.join(variables) + '. No plaintext fallback.')
     secret = secret_input(f'{kind} credential (stored in native OS keyring): ')
     try:
         keyring.set_password(service, account, secret)
@@ -338,7 +338,7 @@ def resolve_secret(profile, name, kind):
             raise ConfigError('Native keyring lookup failed.') from None
         if value:
             return value
-    raise ConfigError('Missing credential. Set ' + variables[0] + ' or use credentials with a native keyring.')
+    raise ConfigError('Missing credential. Set an environment variable (precedence order): ' + ', '.join(variables) + '; or use credentials with a native keyring.')
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
