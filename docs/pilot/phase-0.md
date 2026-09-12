@@ -11,7 +11,7 @@ Status: **in progress; not ready to advance Phase 1**. Evidence collected Septem
 | QNAP access | Existing operator SSH connection succeeds with strict host-key verification and batch authentication | Does not establish a controller-to-worker service identity |
 | QNAP runtime | QTS reports 5.2.9; kernel 5.10.60-qnap; x86_64; about 15.4 GiB usable RAM | Operator-reported full QTS build remains to be correlated; available memory is a snapshot |
 | QNAP Docker | Engine 27.1.2-qnap8, Compose 2.29.1-qnap2, cgroup v1, 4 logical CPUs | Docker binary is under Container Station, outside the default SSH PATH |
-| Portainer | Installed binary reports 2.39.6 | Exact environment identity/Standard Edge API checks require the pilot credential and verified TLS path |
+| Portainer | Version 2.39.6; native-vault API credential resolves exact distinct local and Standard Edge environments, both reported up, through verified HTTPS | Worker isolation and service SSH remain separate gates |
 | Storage | Selected QNAP parent share exists; intended control/results/backup directories are separate siblings and not yet created | Same backing volume for backup and live data does not protect against volume failure |
 | Existing CLI auth | Codex 0.154.0 reports ChatGPT login; Claude Code 2.1.269 reports first-party subscription login | Login status alone is not an authenticated model call or isolated worker auth proof |
 | Fixture Git access | Operator SSH can read the public fixture repository refs | Operator identity must not be copied into workers; scoped deploy-key delivery remains open |
@@ -21,7 +21,7 @@ The operator selected four initial workers and five maximum. Preserve that targe
 
 ## Profile revisions and tooling finding
 
-Corrected dev-host OS to the observed release/kernel and QNAP architecture to `x86_64` (the CPU model is not an architecture identifier). Preserved the supplied paths, credential profile, fixture revision, four-worker target and numeric limits. The iPhone model is recorded as operator context; the actual iOS version is still needed, so `phone_os` is unknown rather than mislabeled as a version.
+Corrected dev-host OS to the observed release/kernel and QNAP architecture to `x86_64` (the CPU model is not an architecture identifier). Preserved the supplied paths, credential profile, fixture revision, four-worker target and numeric limits. The operator subsequently confirmed the phone model and iOS version; both are recorded in the private profile. The phone route and reconnect behavior still need testing.
 
 The default Python keyring is a chain of native OS vault adapters. The setup script formerly rejected all chains, preventing credential setup despite installed native backends. It now accepts a chain only when every fallback is a supported positive-priority native backend. A regression test rejects a mixed native/plaintext chain and an empty chain. No plaintext credential file was created and no secret value was logged.
 
@@ -29,9 +29,13 @@ The proposed egress list now includes subscription login origins in addition to 
 
 ## TLS and access findings
 
-Portainer presents a self-signed certificate valid for `localhost`, not the configured management hostname. Its public certificate was retrieved through authenticated, host-key-verified QNAP SSH and saved only in the private configuration directory. Trusting it cannot fix the hostname mismatch. A QNAP-local curl attempt with the public certificate also failed because that TLS client could not process its empty issuer name. TLS verification remains mandatory.
+The original Portainer self-signed certificate covered only loopback identities, not the configured management hostname, and had an empty issuer name. Trusting that certificate did not resolve hostname verification. A temporary SSH-forwarding test also failed because QNAP explicitly configures `AllowTcpForwarding no`; the test tunnel was closed and that policy remains unchanged.
 
-A temporary local SSH-forwarding test was closed after failure; QNAP explicitly configures `AllowTcpForwarding no`. Do not assume SSH login implies tunnel support, silently weaken TLS, or enable forwarding globally. Remediation requires a reviewed choice: provision a certificate covering the selected management name, or define a narrowly authorized forwarding route. Changing the existing Portainer certificate/restarting its service is separate from deploying new pilot stacks. See [Portainer's certificate guidance](https://docs.portainer.io/advanced/ssl).
+After the operator asked to continue with remediation, the existing standalone Portainer server received a 365-day server certificate signed by a dedicated private CA, covering the configured DNS management hostname and loopback. The server key was generated and retained on QNAP; the CA signing key remains in the workstation's private configuration directory. The original certificate/key pair is backed up on QNAP. Private apply/rollback scripts and a manifest record the exact container, image and paths outside Git. The pair was replaced while Portainer was stopped, then the same container restarted. No image pull, recreation or pilot stack deployment occurred. Other QNAP container IDs/states matched the pre-change snapshot.
+
+Verified `GET /api/status` with hostname validation and the new CA before updating the private profile's CA bundle. Version remains 2.39.6. Retrieved the API credential from the native vault without logging it; `GET /api/endpoints` matched both exact configured names, distinct IDs, expected local/Edge types, reported-up status and no reported asynchronous mode. Read-only Docker proxy `GET /api/endpoints/<id>/docker/version` also succeeded for both environments: QNAP Engine 27.1.2-qnap8 and dev-host Engine 29.2.1. This verifies live access through the Standard Edge connection, beyond stored endpoint status. TLS verification and redirect refusal remain enabled. See [Portainer's certificate guidance](https://docs.portainer.io/advanced/ssl).
+
+The CA is trusted explicitly by this pilot profile, not installed into global or browser trust. Browsers need the public CA certificate imported to trust this management origin. Direct LAN-IP access is not covered by this certificate. Renew the server certificate before its one-year expiry; retain the private manifest, CA signing key and QNAP rollback pair securely. The existing Edge agent tolerates self-signed polling certificates; successful connectivity does not establish strict agent-side TLS verification, which remains a hardening item.
 
 Local SSH listens but rejects the current noninteractive authentication attempt. Neither localhost access nor a QNAP-to-worker service alias has been marked verified. The service identity must be tied to the fixed request/attach contracts; do not grant a generic autonomous shell just to make inventory pass.
 
@@ -42,9 +46,9 @@ Ubuntu 25.10 [reached end of life on July 9, 2026](https://lists.ubuntu.com/arch
 ## Remaining Phase 0 gates
 
 - [ ] Supported host OS/upgrade decision and post-upgrade Docker/driver compatibility checks.
-- [ ] Actual iOS version and tested Termius/private phone route.
-- [ ] Pilot Portainer credential stored in a native vault or otherwise securely supplied; exact environment/type/Standard Edge checks through a verified TLS route.
-- [ ] Reviewed Portainer TLS remediation or narrowly scoped tunnel access; no existing infrastructure changes are implied by the inventory.
+- [ ] Tested Termius/private phone route (phone model and iOS version are now recorded).
+- [x] Pilot Portainer credential stored in a native vault; exact environment/type/Standard Edge metadata checks through a verified TLS route.
+- [x] Portainer management TLS remediated with private backups and rollback; HTTPS health and credential checks pass.
 - [ ] Verified controller-to-worker authenticated route and operator recovery access.
 - [ ] tmux/mosh availability and later real phone reconnect test. Packages are absent on dev-host; installing them requires local sudo authentication, which is not available noninteractively.
 - [ ] Disposable per-worker subscription login/model smoke tests, refresh/expiry behavior and scoped Git authentication. No personal home directory or blanket SSH-agent forwarding into workers.

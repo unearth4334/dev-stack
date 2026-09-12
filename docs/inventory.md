@@ -62,4 +62,4 @@ Run `python3 scripts/dev_stack.py configure` from the repository, then `doctor` 
 
 ## Initial live checks
 
-See the [Phase 0 evidence record](pilot/phase-0.md) for observed runtime versions, corrected profile fields, native-vault compatibility, TLS/SSH blockers and remaining live gates. The operator now targets four initial workers; commission with two first, then increase after measurement. Phase 0 remains open.
+See the [Phase 0 evidence record](pilot/phase-0.md) for observed runtime versions, corrected profile fields, native-vault compatibility, completed management TLS remediation, SSH blockers and remaining live gates. The operator now targets four initial workers; commission with two first, then increase after measurement. Phase 0 remains open.
