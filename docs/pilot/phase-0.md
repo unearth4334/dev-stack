@@ -37,11 +37,13 @@ Verified `GET /api/status` with hostname validation and the new CA before updati
 
 The CA is trusted explicitly by this pilot profile, not installed into global or browser trust. Browsers need the public CA certificate imported to trust this management origin. Direct LAN-IP access is not covered by this certificate. Renew the server certificate before its one-year expiry; retain the private manifest, CA signing key and QNAP rollback pair securely. The existing Edge agent tolerates self-signed polling certificates; successful connectivity does not establish strict agent-side TLS verification, which remains a hardening item.
 
-Local SSH listens but rejects the current noninteractive authentication attempt. Neither localhost access nor a QNAP-to-worker service alias has been marked verified. The service identity must be tied to the fixed request/attach contracts; do not grant a generic autonomous shell just to make inventory pass.
+Local SSH listens. A temporary source-restricted, forced-command-only key successfully authenticated from QNAP to dev-host over the LAN with an independently pinned host key. The probe authorization and all remote probe key/known-hosts files were removed afterward. Neither permanent operator access nor a controller service alias has been marked verified. The service identity must be tied to the fixed request/attach contracts; do not grant a generic autonomous shell just to make inventory pass.
 
 ## Host lifecycle finding
 
 Ubuntu 25.10 [reached end of life on July 9, 2026](https://lists.ubuntu.com/archives/ubuntu-security-announce/2026-July/010877.html); Canonical identifies Ubuntu 26.04 LTS as its supported upgrade path. Record a host upgrade/compatibility decision before deploying the pilot. No OS upgrade or package installation was attempted; it requires a separate maintenance plan protecting existing services and development work. Read-only inventory and configuration preparation can continue.
+
+The [host readiness and access runbook](host-readiness.md) records the maintenance preparation, package commands and phase ownership of temporary versus permanent SSH access. QNAP has SSH but no `python3` on its default SSH PATH; controller runtime provisioning remains explicit.
 
 ## Remaining Phase 0 gates
 
