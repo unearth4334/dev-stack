@@ -54,7 +54,7 @@ The pattern follows the operator's [Portainer deploy skill](https://gist.github.
 python3 scripts/dev_stack.py credentials portainer
 ```
 
-This prompts without echo and stores only in a supported native OS vault. Python `keyring` is optional, and the workstation must have a usable Secret Service, KWallet, libsecret, macOS or Windows backend. Plaintext, alternate/chained backends and home-grown encryption are refused. See [keyring's installation and backend guidance](https://keyring.readthedocs.io/en/latest/) if needed; no keyring service is installed automatically. This workstation vault does not by itself provide runtime credential delivery on QNAP/dev-host.
+This prompts without echo and stores only in a supported native OS vault. Python `keyring` is optional, and the workstation must have a usable Secret Service, KWallet, libsecret, macOS or Windows backend. A desktop chain is accepted only when every fallback is one of those native backends. Plaintext, unsupported backends and home-grown encryption are refused. See [keyring's installation and backend guidance](https://keyring.readthedocs.io/en/latest/) if needed; no keyring service is installed automatically. This workstation vault does not by itself provide runtime credential delivery on QNAP/dev-host.
 
 | Credential | Resolution order / storage |
 |---|---|
