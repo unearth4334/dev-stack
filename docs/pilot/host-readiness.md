@@ -4,7 +4,7 @@ This runbook prepares the remaining Phase 0 prerequisites. It does not authorize
 
 ## Supported dev-host maintenance
 
-The current Ubuntu 25.10 installation is out of support. The operator's choice of an upgrade to Ubuntu 26.04 LTS or a different supported execution host is pending. The existing NVIDIA driver reports 580.159.03 with the expected GPU; preserve this as a compatibility baseline, not a target driver pin.
+The current Ubuntu 25.10 installation is out of support. The operator selected preparation of an in-place upgrade to Ubuntu 26.04 LTS. The release checker offers 26.04.1 LTS; the [host-specific upgrade plan](dev-host-upgrade.md) records observed readiness, backups, execution, validation and recovery. Execution is not scheduled. The existing NVIDIA driver reports 580.159.03 with the expected GPU; preserve this as a compatibility baseline, not a target driver pin.
 
 Before scheduling an in-place upgrade:
 

@@ -41,13 +41,13 @@ Local SSH listens. A temporary source-restricted, forced-command-only key succes
 
 ## Host lifecycle finding
 
-Ubuntu 25.10 [reached end of life on July 9, 2026](https://lists.ubuntu.com/archives/ubuntu-security-announce/2026-July/010877.html); Canonical identifies Ubuntu 26.04 LTS as its supported upgrade path. Record a host upgrade/compatibility decision before deploying the pilot. No OS upgrade or package installation was attempted; it requires a separate maintenance plan protecting existing services and development work. Read-only inventory and configuration preparation can continue.
+Ubuntu 25.10 [reached end of life on July 9, 2026](https://lists.ubuntu.com/archives/ubuntu-security-announce/2026-July/010877.html); Canonical identifies Ubuntu 26.04 LTS as its supported upgrade path. The operator selected preparation of an in-place upgrade; the stable release checker offers 26.04.1 LTS. The [upgrade plan](dev-host-upgrade.md) records the Kubuntu desktop, Docker vendor-feed mismatch, NVIDIA baseline and maintenance gates. No OS upgrade or package installation was attempted; it requires a separate maintenance plan protecting existing services and development work. Read-only inventory and configuration preparation can continue.
 
 The [host readiness and access runbook](host-readiness.md) records the maintenance preparation, package commands and phase ownership of temporary versus permanent SSH access. QNAP has SSH but no `python3` on its default SSH PATH; controller runtime provisioning remains explicit.
 
 ## Remaining Phase 0 gates
 
-- [ ] Supported host OS/upgrade decision and post-upgrade Docker/driver compatibility checks.
+- [ ] Execute the selected host upgrade after maintenance readiness is established, then verify Docker/driver compatibility. Upgrade planning is complete; execution is pending.
 - [ ] Tested Termius/private phone route (phone model and iOS version are now recorded).
 - [x] Pilot Portainer credential stored in a native vault; exact environment/type/Standard Edge metadata checks through a verified TLS route.
 - [x] Portainer management TLS remediated with private backups and rollback; HTTPS health and credential checks pass.
