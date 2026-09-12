@@ -35,8 +35,13 @@ A temporary local SSH-forwarding test was closed after failure; QNAP explicitly 
 
 Local SSH listens but rejects the current noninteractive authentication attempt. Neither localhost access nor a QNAP-to-worker service alias has been marked verified. The service identity must be tied to the fixed request/attach contracts; do not grant a generic autonomous shell just to make inventory pass.
 
+## Host lifecycle finding
+
+Ubuntu 25.10 [reached end of life on July 9, 2026](https://lists.ubuntu.com/archives/ubuntu-security-announce/2026-July/010877.html); Canonical identifies Ubuntu 26.04 LTS as its supported upgrade path. Record a host upgrade/compatibility decision before deploying the pilot. No OS upgrade or package installation was attempted; it requires a separate maintenance plan protecting existing services and development work. Read-only inventory and configuration preparation can continue.
+
 ## Remaining Phase 0 gates
 
+- [ ] Supported host OS/upgrade decision and post-upgrade Docker/driver compatibility checks.
 - [ ] Actual iOS version and tested Termius/private phone route.
 - [ ] Pilot Portainer credential stored in a native vault or otherwise securely supplied; exact environment/type/Standard Edge checks through a verified TLS route.
 - [ ] Reviewed Portainer TLS remediation or narrowly scoped tunnel access; no existing infrastructure changes are implied by the inventory.
