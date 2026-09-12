@@ -135,6 +135,16 @@ class SetupTests(unittest.TestCase):
             self.assertEqual(ds.resolve_secret(self.profile, 'different', 'portainer'), 'specific')
         vault.assert_not_called()
 
+    def test_only_native_keyring_chains_are_accepted(self):
+        native = type('Native', (), {'__module__': 'keyring.backends.SecretService', 'priority': 5})()
+        plaintext = type('Plaintext', (), {'__module__': 'keyrings.alt.file', 'priority': 1})()
+        for backends, accepted in (([native], True), ([native, plaintext], False), ([], False)):
+            chain = type('Chain', (), {'__module__': 'keyring.backends.chainer', 'backends': backends, 'priority': 10})()
+            module = mock.Mock()
+            module.get_keyring.return_value = chain
+            with self.subTest(accepted=accepted), mock.patch.dict('sys.modules', {'keyring': module}):
+                self.assertEqual(ds.native_keyring() is module, accepted)
+
     def test_missing_native_keyring_never_prompts_or_writes(self):
         with mock.patch.object(ds, 'native_keyring', return_value=None), mock.patch.object(ds, 'secret_input') as prompt:
             with self.assertRaises(ds.ConfigError):

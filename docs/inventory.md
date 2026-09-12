@@ -59,3 +59,7 @@ GPU sharing/isolation and any local model selection require a separate compatibi
 ## Collecting private values
 
 Run `python3 scripts/dev_stack.py configure` from the repository, then `doctor` to identify missing fields. The [configuration guide](configuration.md) lists inputs, private storage and credential options. Saved answers are operator-supplied intent; live host/auth/fixture verification still gates Phase 0.
+
+## Initial live checks
+
+See the [Phase 0 evidence record](pilot/phase-0.md) for observed runtime versions, corrected profile fields, native-vault compatibility, completed management TLS remediation, SSH blockers and remaining live gates. The operator now targets four initial workers; commission with two first, then increase after measurement. Phase 0 remains open.

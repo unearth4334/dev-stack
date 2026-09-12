@@ -277,7 +277,11 @@ def native_keyring():
     try:
         import keyring
         backend = keyring.get_keyring()
-        if type(backend).__module__ not in NATIVE_BACKENDS or float(backend.priority) <= 0:
+        candidates = list(backend.backends) if type(backend).__module__ == 'keyring.backends.chainer' else [backend]
+        # Desktop installations commonly chain several native vault adapters.
+        # Accept the chain only when every possible fallback is native.
+        if not candidates or any(type(candidate).__module__ not in NATIVE_BACKENDS
+                                 or float(candidate.priority) <= 0 for candidate in candidates):
             return None
         return keyring
     except Exception:
