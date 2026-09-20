@@ -1,5 +1,7 @@
 # Dev stack
 
+> **Superseded (2026-09-19).** This planning repository is archived at tag [`archive/pilot-v0.1-plan`](https://github.com/unearth4334/dev-stack/releases/tag/archive%2Fpilot-v0.1-plan). Active work continues in [dev-stack-v2](https://github.com/unearth4334/dev-stack-v2): Claude Code only, Discord as the frontend, control on dev-host. Nothing below is current.
+
 A self-hosted development platform for concurrent coding agents, with management services on QNAP and isolated execution on dev-host.
 
 Start with the [Pilot v0.1 implementation plan](docs/pilot/index.html), published through [GitHub Pages](https://unearth4334.github.io/dev-stack/pilot/). The [research and architecture report](docs/research.md) explains the recommendations, alternatives, and evidence. The [decision register](docs/decisions.md) separates proposed choices from unresolved questions. The [example task manifest](examples/task.example.json) makes the proposed task contract concrete.
